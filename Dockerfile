@@ -1,3 +1,4 @@
+# Dockerfile
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -7,14 +8,14 @@ RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Copiar requirements e instalar dependências Python
+# Copiar requirements PRIMEIRO (para cache de dependências)
 COPY requirements.txt .
+
+# Instalar dependências Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código da aplicação
-COPY app/ ./app/
-COPY static/ ./static/
-COPY templates/ ./templates/
+# Copiar o restante da aplicação
+COPY . .
 
 # Criar usuário não-root
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
